@@ -1,0 +1,87 @@
+                return;
+            }
+
+            const calculateBtn = document.getElementById('calculateBtn');
+            calculateBtn.classList.add('loading');
+
+            setTimeout(() => {
+                let totalWealthIQD = amount;
+                if (currentCurrency === 'usd') {
+                    totalWealthIQD = (amount / 100) * exchangeRate;
+                }
+
+                let resultHTML = `
+                    <p><strong>${translations[currentLanguage].totalWealth}</strong> ${formatNumber(totalWealthIQD)} IQD</p>
+                `;
+
+                if (totalWealthIQD < zakatThreshold) {
+                    resultHTML += `
+                        <hr>
+                        <p><strong>${translations[currentLanguage].noZakat}</strong></p>
+                    `;
+                } else {
+                    const millions = totalWealthIQD / 1000000;
+                    const zakatDue = millions * zakatRate;
+
+                    resultHTML += `
+                        <p><strong>${translations[currentLanguage].millions}</strong> ${formatNumber(millions)}</p>
+                        <hr>
+                        <p class="zakat-due"><strong>${translations[currentLanguage].zakatDue}</strong> ${formatNumber(zakatDue)} IQD</p>
+                    `;
+
+                    if (currentCurrency === 'usd') {
+                        const zakatDueUSD = (zakatDue / exchangeRate) * 100;
+                        resultHTML += `
+                            <p><strong>${translations[currentLanguage].inUSD}</strong> ${formatNumber(zakatDueUSD)} USD</p>
+                            <div class="conversion-info">
+                                <p><strong>${translations[currentLanguage].currencyConversion}</strong></p>
+                                <p>${translations[currentLanguage].rate} ${formatNumber(exchangeRate)} IQD = 100 USD</p>
+                            </div>
+                        `;
+                    }
+                }
+
+                resultContent.innerHTML = resultHTML;
+                resultDiv.style.display = 'block';
+
+                calculateBtn.classList.remove('loading');
+            }, 500);
+        }
+
+        window.onload = function() {
+            changeLanguage();
+
+            // Theme toggle
+            const themeToggle = document.getElementById('themeToggle');
+            themeToggle.addEventListener('change', () => {
+                document.body.classList.toggle('light-mode', themeToggle.checked);
+                document.body.classList.toggle('dark-mode', !themeToggle.checked);
+            });
+
+            // Currency option clicks
+            const currencyOptions = document.querySelectorAll('.currency-option');
+            currencyOptions.forEach(option => {
+                option.addEventListener('click', () => selectCurrency(option.dataset.currency));
+            });
+
+            // Toggle currency button
+            document.getElementById('toggleCurrencyBtn').addEventListener('click', toggleCurrency);
+
+            // Language select change
+            document.getElementById('languageSelect').addEventListener('change', changeLanguage);
+
+            // Change language button (cycles through languages)
+            document.getElementById('changeLanguageBtn').addEventListener('click', () => {
+                const languages = ['ku', 'en', 'ar'];
+                const currentIndex = languages.indexOf(currentLanguage);
+                const nextIndex = (currentIndex + 1) % languages.length;
+                document.getElementById('languageSelect').value = languages[nextIndex];
+                changeLanguage();
+            });
+
+            // Calculate button
+            document.getElementById('calculateBtn').addEventListener('click', calculateZakat);
+        };
+    </script>
+</body>
+</html>

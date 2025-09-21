@@ -1,0 +1,130 @@
+    } else {
+        resultContent.innerHTML = `
+            <p>${translations[currentLang].totalWealth} ${formatNumber(totalWealthIQD)} ${translations[currentLang].inIQD}</p>
+            ${currentCurrency === 'usd' ? `<p>${translations[currentLang].inUSD} ${formatNumber(amount)}</p>` : ''}
+            <p>${translations[currentLang].nisabTitle}: ${formatNumber(nisabGoldIQD)} ${translations[currentLang].inIQD}</p>
+            <p>${translations[currentLang].rate}: ${formatNumber(goldPerGram)} USD/g</p>
+            <p class="zakat-due">${translations[currentLang].zakatDue} ${formatNumber(zakatDue)} ${translations[currentLang].inIQD}</p>
+            ${currentCurrency === 'usd' ? `<p>${translations[currentLang].inUSD} ${formatNumber(zakatDueUSD)}</p>` : ''}
+            <p>${translations[currentLang].currencyConversion}: ${formatNumber(exchangeRate)} IQD = 100 USD</p>
+        `;
+    }
+
+    resultDiv.style.display = 'block';
+}
+
+document.querySelectorAll('.language-button').forEach(button => {
+    button.addEventListener('click', () => {
+        document.querySelectorAll('.language-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        updateLanguage(button.getAttribute('data-lang'));
+    });
+});
+
+document.querySelectorAll('.theme-button').forEach(button => {
+    button.addEventListener('click', () => {
+        toggleTheme(button.getAttribute('data-theme'));
+    });
+});
+
+document.querySelectorAll('.mode-button').forEach(button => {
+    button.addEventListener('click', () => {
+        selectMode(button.getAttribute('data-mode'));
+        selectCurrency('iqd', button.getAttribute('data-mode'));
+    });
+});
+
+document.getElementById('iqdOption').addEventListener('click', () => selectCurrency('iqd', 'basic'));
+document.getElementById('usdOption').addEventListener('click', () => selectCurrency('usd', 'basic'));
+document.getElementById('iqdOptionSilver').addEventListener('click', () => selectCurrency('iqd', 'silver'));
+document.getElementById('usdOptionSilver').addEventListener('click', () => selectCurrency('usd', 'silver'));
+document.getElementById('iqdOptionGold').addEventListener('click', () => selectCurrency('iqd', 'gold'));
+document.getElementById('usdOptionGold').addEventListener('click', () => selectCurrency('usd', 'gold'));
+
+document.getElementById('calculateBtn').addEventListener('click', calculateZakat);
+
+document.getElementById('silverSpot').addEventListener('input', () => {
+    const silverSpot = parseFloat(document.getElementById('silverSpot').value);
+    const exchangeRate = parseFloat(document.getElementById('exchangeRateSilver').value);
+    if (!isNaN(silverSpot) && silverSpot > 0) {
+        const silverPerGram = silverSpot / 31.1035;
+        const nisabSilverUSD = silverPerGram * 595;
+        document.getElementById('silverPerGram').value = formatNumber(silverPerGram);
+        document.getElementById('nisabSilverUSD').value = formatNumber(nisabSilverUSD);
+        if (!isNaN(exchangeRate) && exchangeRate > 0) {
+            const nisabSilverIQD = nisabSilverUSD * (exchangeRate / 100);
+            document.getElementById('nisabSilverIQD').value = formatNumber(nisabSilverIQD);
+        } else {
+            document.getElementById('nisabSilverIQD').value = '';
+        }
+    } else {
+        document.getElementById('silverPerGram').value = '';
+        document.getElementById('nisabSilverUSD').value = '';
+        document.getElementById('nisabSilverIQD').value = '';
+    }
+});
+
+document.getElementById('goldSpot').addEventListener('input', () => {
+    const goldSpot = parseFloat(document.getElementById('goldSpot').value);
+    const exchangeRate = parseFloat(document.getElementById('exchangeRateGold').value);
+    if (!isNaN(goldSpot) && goldSpot > 0) {
+        const goldPerGram = goldSpot / 31.1035;
+        const nisabGoldUSD = goldPerGram * 85;
+        document.getElementById('goldPerGram').value = formatNumber(goldPerGram);
+        document.getElementById('nisabGoldUSD').value = formatNumber(nisabGoldUSD);
+        if (!isNaN(exchangeRate) && exchangeRate > 0) {
+            const nisabGoldIQD = nisabGoldUSD * (exchangeRate / 100);
+            document.getElementById('nisabGoldIQD').value = formatNumber(nisabGoldIQD);
+        } else {
+            document.getElementById('nisabGoldIQD').value = '';
+        }
+    } else {
+        document.getElementById('goldPerGram').value = '';
+        document.getElementById('nisabGoldUSD').value = '';
+        document.getElementById('nisabGoldIQD').value = '';
+    }
+});
+
+document.getElementById('exchangeRateSilver').addEventListener('input', () => {
+    const exchangeRate = parseFloat(document.getElementById('exchangeRateSilver').value);
+    const silverSpot = parseFloat(document.getElementById('silverSpot').value);
+    if (!isNaN(silverSpot) && silverSpot > 0 && !isNaN(exchangeRate) && exchangeRate > 0) {
+        const silverPerGram = silverSpot / 31.1035;
+        const nisabSilverUSD = silverPerGram * 595;
+        const nisabSilverIQD = nisabSilverUSD * (exchangeRate / 100);
+        document.getElementById('nisabSilverIQD').value = formatNumber(nisabSilverIQD);
+    } else {
+        document.getElementById('nisabSilverIQD').value = '';
+    }
+});
+
+document.getElementById('exchangeRateGold').addEventListener('input', () => {
+    const exchangeRate = parseFloat(document.getElementById('exchangeRateGold').value);
+    const goldSpot = parseFloat(document.getElementById('goldSpot').value);
+    if (!isNaN(goldSpot) && goldSpot > 0 && !isNaN(exchangeRate) && exchangeRate > 0) {
+        const goldPerGram = goldSpot / 31.1035;
+        const nisabGoldUSD = goldPerGram * 85;
+        const nisabGoldIQD = nisabGoldUSD * (exchangeRate / 100);
+        document.getElementById('nisabGoldIQD').value = formatNumber(nisabGoldIQD);
+    } else {
+        document.getElementById('nisabGoldIQD').value = '';
+    }
+});
+
+// Modal functionality
+document.getElementById('aboutZakat').addEventListener('click', () => {
+    document.getElementById('aboutModal').classList.add('show');
+});
+
+document.getElementById('closeModal').addEventListener('click', () => {
+    document.getElementById('aboutModal').classList.remove('show');
+});
+
+// Initialize the calculator
+updateLanguage('ku');
+toggleTheme('dark');
+selectMode('basic');
+selectCurrency('iqd', 'basic');
+    </script>
+</body>
+</html>
